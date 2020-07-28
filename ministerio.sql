@@ -204,7 +204,6 @@ create table PROPIEDAD
 (
    ID_PROPIEDAD         int not null auto_increment,
    ID_MUNICIPIO         int not null,
-   ID_CARPETA           int not null,
    NOMBRE_PROPIEDAD     char(100) not null,
    primary key (ID_PROPIEDAD)
 );
@@ -215,7 +214,6 @@ create table PROPIEDAD
 create table PROPIETARIO
 (
    CI                   int not null auto_increment,
-   ID_PARCELA           int not null,
    NOMBRES              char(200) not null,
    APELLIDO_PATERNO     char(200) not null,
    APELLIDO_MATERNO     char(200) not null,
@@ -324,7 +322,7 @@ alter table ASIGNA add constraint FK_ASIGNA foreign key (ID_TRAMITE)
 alter table ASIGNA add constraint FK_ASIGNA2 foreign key (ID_PERSONAL)
       references PERSONAL (ID_PERSONAL) on delete restrict on update restrict;
 
-alter table CARPETA add constraint FK_ADJUNTA2 foreign key (ID_PROPIEDAD)
+alter table CARPETA add constraint FK_ADJUNTA foreign key (ID_PROPIEDAD)
       references PROPIEDAD (ID_PROPIEDAD) on delete restrict on update restrict;
 
 alter table CARPETA add constraint FK_ENVIA foreign key (ID_UNIDAD)
@@ -357,14 +355,8 @@ alter table PARCELA add constraint FK_CORRESPONDE foreign key (ID_PROPIEDAD)
 alter table PARCELA add constraint FK_PERTENECE_P_P foreign key (CI)
       references PROPIETARIO (CI) on delete restrict on update restrict;
 
-alter table PROPIEDAD add constraint FK_ADJUNTA foreign key (ID_CARPETA)
-      references CARPETA (ID_CARPETA) on delete restrict on update restrict;
-
 alter table PROPIEDAD add constraint FK_CONTIENE_M_P foreign key (ID_MUNICIPIO)
       references MUNICIPIO (ID_MUNICIPIO) on delete restrict on update restrict;
-
-alter table PROPIETARIO add constraint FK_PERTENECE_P_P2 foreign key (ID_PARCELA)
-      references PARCELA (ID_PARCELA) on delete restrict on update restrict;
 
 alter table PROVINCIA add constraint FK_PERTENECE foreign key (ID_DEPARTAMENTO)
       references DEPARTAMENTO (ID_DEPARTAMENTO) on delete restrict on update restrict;
