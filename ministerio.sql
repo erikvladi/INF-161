@@ -1,5 +1,3 @@
--- Tablas SQL Proyecto
-
 drop table if exists ACTIVIDAD;
 
 drop table if exists ASIGNA;
