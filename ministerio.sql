@@ -16,10 +16,6 @@ drop table if exists ENCUENTRA;
 
 drop table if exists ESTADO;
 
-drop table if exists ILEGAL;
-
-drop table if exists JURIDICO;
-
 drop table if exists MINISTERIO;
 
 drop table if exists MUNICIPIO;
@@ -33,14 +29,6 @@ drop table if exists PROPIEDAD;
 drop table if exists PROPIETARIO;
 
 drop table if exists PROVINCIA;
-
-drop table if exists SANEADO;
-
-drop table if exists SANEAR;
-
-drop table if exists SUPERFICIE;
-
-drop table if exists TECNICO;
 
 drop table if exists TIENE;
 
@@ -81,6 +69,11 @@ create table CARPETA
    HOJA_DE_RUTA         int not null,
    primary key (ID_CARPETA)
 );
+
+/*==============================================================*/
+/* Index: ADJUNTA2_FK                                           */
+/*==============================================================*/
+
 
 /*==============================================================*/
 /* Table: CLASIFICACION                                         */
@@ -134,28 +127,6 @@ create table ESTADO
 );
 
 /*==============================================================*/
-/* Table: ILEGAL                                                */
-/*==============================================================*/
-create table ILEGAL
-(
-   ID_SUPERFICIE        int not null auto_increment,
-   ID_PARCELA           int,
-   EXTENSION            float not null,
-   UBICACION            char(200) not null,
-   primary key (ID_SUPERFICIE)
-);
-
-/*==============================================================*/
-/* Table: JURIDICO                                              */
-/*==============================================================*/
-create table JURIDICO
-(
-   ID_PERSONAL          int not null auto_increment,
-   ESPECIALIDAD         char(200) not null,
-   primary key (ID_PERSONAL)
-);
-
-/*==============================================================*/
 /* Table: MINISTERIO                                            */
 /*==============================================================*/
 create table MINISTERIO
@@ -185,6 +156,8 @@ create table PARCELA
    CI                   int not null,
    ID_PROPIEDAD         int not null,
    NOMBRE_PARCELA       char(200) not null,
+   SUPERFICIE           float not null,
+   TIPO                 char(200) not null,
    primary key (ID_PARCELA)
 );
 
@@ -194,6 +167,7 @@ create table PARCELA
 create table PERSONAL
 (
    ID_PERSONAL          int not null auto_increment,
+   ESPECIALIDAD         char(200) not null,
    primary key (ID_PERSONAL)
 );
 
@@ -233,56 +207,6 @@ create table PROVINCIA
 );
 
 /*==============================================================*/
-/* Table: SANEADO                                               */
-/*==============================================================*/
-create table SANEADO
-(
-   ID_SUPERFICIE        int not null auto_increment,
-   ID_PARCELA           int,
-   EXTENSION            float not null,
-   UBICACION            char(200) not null,
-   NRO_RESOLUCION       int,
-   FECHA_SANEAMIENTO    date,
-   OBSERVACIONES        char(200),
-   primary key (ID_SUPERFICIE)
-);
-
-/*==============================================================*/
-/* Table: SANEAR                                                */
-/*==============================================================*/
-create table SANEAR
-(
-   ID_SUPERFICIE        int not null auto_increment,
-   ID_TRAMITE           int not null,
-   ID_PARCELA           int,
-   EXTENSION            float not null,
-   UBICACION            char(200) not null,
-   primary key (ID_SUPERFICIE)
-);
-
-/*==============================================================*/
-/* Table: SUPERFICIE                                            */
-/*==============================================================*/
-create table SUPERFICIE
-(
-   ID_SUPERFICIE        int not null auto_increment,
-   ID_PARCELA           int not null,
-   EXTENSION            float not null,
-   UBICACION            char(200) not null,
-   primary key (ID_SUPERFICIE)
-);
-
-/*==============================================================*/
-/* Table: TECNICO                                               */
-/*==============================================================*/
-create table TECNICO
-(
-   ID_PERSONAL          int not null auto_increment,
-   ESPECIALIDAD         char(200) not null,
-   primary key (ID_PERSONAL)
-);
-
-/*==============================================================*/
 /* Table: TIENE                                                 */
 /*==============================================================*/
 create table TIENE
@@ -298,8 +222,8 @@ create table TIENE
 create table TRAMITE
 (
    ID_TRAMITE           int not null auto_increment,
+   ID_PARCELA           int not null,
    ID_CARPETA           int not null,
-   ID_SUPERFICIE        int not null,
    FECHA_INICIO         date not null,
    FECHA_FIN            date not null,
    primary key (ID_TRAMITE)
@@ -340,12 +264,6 @@ alter table ENCUENTRA add constraint FK_ENCUENTRA foreign key (ID_TRAMITE)
 alter table ENCUENTRA add constraint FK_ENCUENTRA2 foreign key (ID_ESTADO)
       references ESTADO (ID_ESTADO) on delete restrict on update restrict;
 
-alter table ILEGAL add constraint FK_INHERITANCE_6 foreign key (ID_SUPERFICIE)
-      references SUPERFICIE (ID_SUPERFICIE) on delete restrict on update restrict;
-
-alter table JURIDICO add constraint FK_ES foreign key (ID_PERSONAL)
-      references PERSONAL (ID_PERSONAL) on delete restrict on update restrict;
-
 alter table MUNICIPIO add constraint FK_CONTIENE foreign key (ID_PROVINCIA)
       references PROVINCIA (ID_PROVINCIA) on delete restrict on update restrict;
 
@@ -361,29 +279,14 @@ alter table PROPIEDAD add constraint FK_CONTIENE_M_P foreign key (ID_MUNICIPIO)
 alter table PROVINCIA add constraint FK_PERTENECE foreign key (ID_DEPARTAMENTO)
       references DEPARTAMENTO (ID_DEPARTAMENTO) on delete restrict on update restrict;
 
-alter table SANEADO add constraint FK_INHERITANCE_3 foreign key (ID_SUPERFICIE)
-      references SUPERFICIE (ID_SUPERFICIE) on delete restrict on update restrict;
-
-alter table SANEAR add constraint FK_INHERITANCE_4 foreign key (ID_SUPERFICIE)
-      references SUPERFICIE (ID_SUPERFICIE) on delete restrict on update restrict;
-
-alter table SANEAR add constraint FK_RELATIONSHIP_15 foreign key (ID_TRAMITE)
-      references TRAMITE (ID_TRAMITE) on delete restrict on update restrict;
-
-alter table SUPERFICIE add constraint FK_TIENE_P_S foreign key (ID_PARCELA)
-      references PARCELA (ID_PARCELA) on delete restrict on update restrict;
-
-alter table TECNICO add constraint FK_INHERITANCE_5 foreign key (ID_PERSONAL)
-      references PERSONAL (ID_PERSONAL) on delete restrict on update restrict;
-
 alter table TIENE add constraint FK_TIENE foreign key (ID_PROPIEDAD)
       references PROPIEDAD (ID_PROPIEDAD) on delete restrict on update restrict;
 
 alter table TIENE add constraint FK_TIENE2 foreign key (ID_CLASIFICACION)
       references CLASIFICACION (ID_CLASIFICACION) on delete restrict on update restrict;
 
-alter table TRAMITE add constraint FK_RELATIONSHIP_16 foreign key (ID_SUPERFICIE)
-      references SANEAR (ID_SUPERFICIE) on delete restrict on update restrict;
+alter table TRAMITE add constraint FK_RELATIONSHIP_14 foreign key (ID_PARCELA)
+      references PARCELA (ID_PARCELA) on delete restrict on update restrict;
 
 alter table TRAMITE add constraint FK_TIENE_C_T foreign key (ID_CARPETA)
       references CARPETA (ID_CARPETA) on delete restrict on update restrict;
